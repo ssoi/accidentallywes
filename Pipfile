@@ -1,0 +1,23 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[packages]
+jupyter = "==1.0.0"
+Keras = "==2.3.1"
+matplotlib = "==3.2.1"
+numpy = "==1.18.1"
+pandas = "==0.25.3"
+praw = "==7.1.0"
+pydot = "==1.4.1"
+seaborn = "*"
+scikit-learn = "==0.22.1"
+tensorflow = "==2.2.0"
+black = "*"
+
+[requires]
+python_version = "3.7"
+
+[pipenv]
+allow_prereleases = true
