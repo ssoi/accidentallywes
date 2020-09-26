@@ -3,12 +3,11 @@ from datetime import datetime
 
 import pandas as pd
 import requests
-
 from praw import Reddit
 
 
 def _get_reddit_creds_from_env():
-    app_name = os.environ["APP_NAME"]
+    app_name = os.environ["APPNAME"]
     username = os.environ["USERNAME"]
 
     creds = {
@@ -46,7 +45,7 @@ def create_dataset(submissions):
     dataset_rows = [
         _process_submission(submission)
         for submission in submissions
-        if not submission.is_video
+        if not submission.is_video and _is_jpeg(submission.url)
     ]
 
     dataset = pd.DataFrame(dataset_rows, columns=DATASETCOLS)
@@ -67,4 +66,38 @@ def _process_submission(submission):
         submission.shortlink,
     )
 
-    return results
+    return result
+
+
+def _is_jpeg(url):
+    is_jpeg = url[-4:].lower() in (".jpg", ".jpeg")
+
+    return is_jpeg
+
+
+def download_image(image_url, image_dir):
+    print("{} {}".format(image_url, _is_jpeg(image_url)))
+    image_request = requests.get(image_url)
+
+    filepath = _get_filepath_from_url(image_url, image_dir)
+    with open(filepath, "wb") as image_file:
+        image_file.write(image_request.content)
+
+    return
+
+
+def _get_filepath_from_url(url, image_dir):
+    _, filename = os.path.split(url)
+    filepath = os.path.join(image_dir, filename)
+
+    return filepath
+
+
+def write_dataset(dataset, data_dir):
+    timestamp = str(int(datetime.utcnow().timestamp()))
+    filename = f"{timestamp}.csv"
+    filepath = os.path.join(data_dir, filename)
+
+    dataset.to_csv(filepath)
+
+    return
